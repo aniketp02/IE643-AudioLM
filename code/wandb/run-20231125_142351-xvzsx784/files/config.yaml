@@ -1,0 +1,67 @@
+wandb_version: 1
+
+learning_rate:
+  desc: null
+  value: 0.0002
+num_train_steps:
+  desc: null
+  value: 9
+batch_size:
+  desc: null
+  value: 4
+data_max_length:
+  desc: null
+  value: 10240
+dataset:
+  desc: null
+  value: /home/ubuntu/IE643/project/data/wav_dir
+save_results_every:
+  desc: null
+  value: 2
+save_model_every:
+  desc: null
+  value: 4
+gradient_accum_every:
+  desc: null
+  value: 8
+target_sample_hz:
+  desc: null
+  value: 16000
+_wandb:
+  desc: null
+  value:
+    python_version: 3.9.18
+    cli_version: 0.16.0
+    framework: huggingface
+    huggingface_version: 4.35.2
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    start_time: 1700922231.183051
+    t:
+      1:
+      - 1
+      - 11
+      - 49
+      - 50
+      - 53
+      - 55
+      - 64
+      - 71
+      2:
+      - 1
+      - 11
+      - 49
+      - 50
+      - 53
+      - 55
+      - 64
+      - 71
+      3:
+      - 16
+      - 23
+      4: 3.9.18
+      5: 0.16.0
+      6: 4.35.2
+      8:
+      - 5
+      13: linux-x86_64

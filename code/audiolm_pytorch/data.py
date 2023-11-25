@@ -67,7 +67,7 @@ class SoundDataset(Dataset):
     def __getitem__(self, idx):
         file = self.files[idx]
 
-        data, sample_hz = torchaudio.load(file)
+        data, sample_hz = torchaudio.load(str(file))
 
         assert data.numel() > 0, f'one of your audio file ({file}) is empty. please remove it from your folder'
 

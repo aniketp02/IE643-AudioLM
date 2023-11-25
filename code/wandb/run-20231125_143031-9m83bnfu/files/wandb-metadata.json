@@ -1,0 +1,68 @@
+{
+    "os": "Linux-5.15.0-1039-aws-x86_64-with-glibc2.31",
+    "python": "3.9.18",
+    "heartbeatAt": "2023-11-25T14:30:31.867238",
+    "startedAt": "2023-11-25T14:30:31.446295",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/home/ubuntu/IE643/project/code/train_soundstream.py",
+    "codePathLocal": "train_soundstream.py",
+    "codePath": "code/train_soundstream.py",
+    "git": {
+        "remote": "https://github.com/aniketp02/IE643-AudioLM.git",
+        "commit": "9213fa97d96b4015546a55983977e1aafc725e5f"
+    },
+    "email": null,
+    "root": "/home/ubuntu/IE643/project",
+    "host": "ip-172-31-91-210",
+    "username": "ubuntu",
+    "executable": "/home/ubuntu/miniconda3/envs/audiolm/bin/python",
+    "cpu_count": 2,
+    "cpu_count_logical": 4,
+    "cpu_freq": {
+        "current": 2799.9984999999997,
+        "min": 0.0,
+        "max": 0.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2499.998,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 3099.987,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2499.998,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 2499.998,
+            "min": 0.0,
+            "max": 0.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 248.0936737060547,
+            "used": 162.96376037597656
+        }
+    },
+    "gpu": "Tesla T4",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "Tesla T4",
+            "memory_total": 16106127360
+        }
+    ],
+    "memory": {
+        "total": 15.325695037841797
+    }
+}

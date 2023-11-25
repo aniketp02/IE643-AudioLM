@@ -48,6 +48,8 @@ from packaging import version
 from accelerate import Accelerator, DistributedType
 from accelerate.utils import DistributedDataParallelKwargs, InitProcessGroupKwargs
 
+import wandb
+
 # constants
 
 DEFAULT_SAMPLE_RATE = 16000
@@ -218,6 +220,24 @@ class SoundStreamTrainer(nn.Module):
             "learning_rate": lr,
             "target_sample_hz": soundstream.target_sample_hz,
         }
+
+        # initialize the logs
+
+        wandb.init(
+            # Set the project where this run will be logged
+            project="SoundStreamTrainer", 
+            # Track hyperparameters and run metadata
+            config={
+            "learning_rate": lr,
+            "num_train_steps": num_train_steps,
+            "batch_size": batch_size,
+            "data_max_length": data_max_length,
+            "dataset": folder,
+            "save_results_every": save_results_every,
+            "save_model_every": save_model_every,
+            "gradient_accum_every": grad_accum_every,
+            "target_sample_hz": soundstream.target_sample_hz,
+            })
 
         # optimizers
 
@@ -513,12 +533,14 @@ class SoundStreamTrainer(nn.Module):
             _, scale_factor = key.split(':')
 
             losses_str += f" | discr (scale {scale_factor}) loss: {loss:.3f}"
+            wandb.log({f"Discr Scale {scale_factor}": float(f"{loss:.3f}")})
             if log_losses:
                 self.accelerator.log({f"discr_loss (scale {scale_factor})": loss}, step=steps)
 
         # log
 
         self.print(losses_str)
+        wandb.log({"Total loss": float(f"{logs['loss']:.3f}"), "Recon loss": float(f"{logs['recon_loss']:.3f}")})
 
         # update exponential moving averaged generator
 
@@ -548,6 +570,10 @@ class SoundStreamTrainer(nn.Module):
                 for ind, recon in enumerate(recons.unbind(dim = 0)):
                     filename = str(self.results_folder / f'sample_{label}.flac')
                     torchaudio.save(filename, recon.cpu().detach(), self.unwrapped_soundstream.target_sample_hz)
+                    # wandb.log({filename : wandb.Audio(
+                    #                 recon.cpu().detach(),  
+                    #                 sample_rate=self.unwrapped_soundstream.target_sample_hz
+                    #                 )}) 
 
             self.print(f'{steps}: saving to {str(self.results_folder)}')
 
