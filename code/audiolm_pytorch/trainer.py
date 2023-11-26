@@ -203,6 +203,8 @@ class SoundStreamTrainer(nn.Module):
 
         self.soundstream = soundstream
 
+        self.lr = lr
+
         self.use_ema = use_ema
         if self.use_ema:
             self.ema_soundstream = EMA(soundstream, beta = ema_beta, update_after_step = ema_update_after_step, update_every = ema_update_every)
@@ -534,6 +536,7 @@ class SoundStreamTrainer(nn.Module):
 
             losses_str += f" | discr (scale {scale_factor}) loss: {loss:.3f}"
             wandb.log({f"Discr Scale {scale_factor}": float(f"{loss:.3f}")})
+            wandb.log({"Learning Rate": self.lr})
             if log_losses:
                 self.accelerator.log({f"discr_loss (scale {scale_factor})": loss}, step=steps)
 
@@ -658,6 +661,24 @@ class SemanticTransformerTrainer(nn.Module):
         self.num_train_steps = num_train_steps
         self.batch_size = batch_size
         self.grad_accum_every = grad_accum_every
+
+        # initialize the logs
+
+        wandb.init(
+            # Set the project where this run will be logged
+            project="SemanticTransformerTrainer", 
+            # Track hyperparameters and run metadata
+            config={
+            "learning_rate": lr,
+            "num_train_steps": num_train_steps,
+            "batch_size": batch_size,
+            "data_max_length": data_max_length,
+            "dataset": folder,
+            "save_results_every": save_results_every,
+            "save_model_every": save_model_every,
+            "gradient_accum_every": grad_accum_every,
+            "target_sample_hz": wav2vec.target_sample_hz,
+            })
 
         # optimizers
 
@@ -817,6 +838,7 @@ class SemanticTransformerTrainer(nn.Module):
         # log
 
         self.print(f"{steps}: loss: {logs['loss']}")
+        wandb.log({"Train Loss": logs['loss']})
         self.accelerator.log({"train_loss": logs['loss']}, step=steps)
 
         # sample results every so often
@@ -839,6 +861,7 @@ class SemanticTransformerTrainer(nn.Module):
             valid_loss /= self.average_valid_loss_over_grad_accum_every
 
             self.print(f'{steps}: valid loss {valid_loss}')
+            wandb.log({"Valid Loss": valid_loss})
             self.accelerator.log({"valid_loss": valid_loss}, step=steps)
 
         # save model every so often
@@ -924,6 +947,24 @@ class CoarseTransformerTrainer(nn.Module):
         self.num_train_steps = num_train_steps
         self.batch_size = batch_size
         self.grad_accum_every = grad_accum_every
+
+        # initialize the logs
+
+        wandb.init(
+            # Set the project where this run will be logged
+            project="CoarseTransformerTrainer", 
+            # Track hyperparameters and run metadata
+            config={
+            "learning_rate": lr,
+            "num_train_steps": num_train_steps,
+            "batch_size": batch_size,
+            "data_max_length": data_max_length,
+            "dataset": folder,
+            "save_results_every": save_results_every,
+            "save_model_every": save_model_every,
+            "gradient_accum_every": grad_accum_every,
+            "target_sample_hz": wav2vec.target_sample_hz,
+            })
 
         # optimizers
 
@@ -1084,6 +1125,7 @@ class CoarseTransformerTrainer(nn.Module):
         # log
 
         self.print(f"{steps}: loss: {logs['loss']}")
+        wandb.log({"Train Loss": logs['loss']})
         self.accelerator.log({"train_loss": logs['loss']}, step=steps)
 
         # sample results every so often
@@ -1110,6 +1152,7 @@ class CoarseTransformerTrainer(nn.Module):
             valid_loss /= self.average_valid_loss_over_grad_accum_every
 
             self.print(f'{steps}: valid loss {valid_loss}')
+            wandb.log({"Valid Loss": valid_loss})
             self.accelerator.log({"valid_loss": valid_loss}, step=steps)
 
         # save model every so often
