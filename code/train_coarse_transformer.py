@@ -1,8 +1,8 @@
-from audiolm_pytorch import HubertWithKmeans, SoundStream, CoarseTransformer, CoarseTransformerTrainer
+from audiolm_pytorch import HubertWithKmeans, SoundStream, EncodecWrapper, CoarseTransformer, CoarseTransformerTrainer
 
 hubert_ckpt = 'hubert/hubert_base_ls960.pt'
 hubert_quantizer = 'hubert/hubert_base_ls960_L9_km500.bin'
-soundstream_ckpt = 'results/soundstream.8.pt'
+# soundstream_ckpt = 'results/soundstream.8.pt'
 dataset_folder = '/home/ubuntu/IE643/project/data/small'
 results_folder = 'results/coarse'
 
@@ -11,12 +11,17 @@ wav2vec = HubertWithKmeans(
     kmeans_path=f'{hubert_quantizer}'
 )
 
-soundstream = SoundStream(
-    codebook_size=1024,
-    rq_num_quantizers=8
-)
+# soundstream = SoundStream(
+#     codebook_size=1024,
+#     rq_num_quantizers=8
+# )
 
-soundstream.load(f'{soundstream_ckpt}')
+# soundstream.load(f'{soundstream_ckpt}')
+
+encodec = EncodecWrapper(
+    target_sample_hz=24000,
+    num_quantizers=8
+)
 
 coarse_transformer = CoarseTransformer(
     num_semantic_tokens=wav2vec.codebook_size,
@@ -28,7 +33,7 @@ coarse_transformer = CoarseTransformer(
 
 coarse_transformer_trainer = CoarseTransformerTrainer(
     transformer=coarse_transformer,
-    codec=soundstream,
+    codec=encodec,
     wav2vec=wav2vec,
     folder=dataset_folder,
     results_folder=results_folder,

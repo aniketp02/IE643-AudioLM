@@ -982,10 +982,11 @@ class CoarseTransformerTrainer(nn.Module):
             assert exists(folder), 'folder must be passed in, if not passing in a custom dataset for text conditioned audio synthesis training'
 
             assert not (exists(data_max_length) and exists(data_max_length_seconds))
-
+            
             if exists(data_max_length_seconds):
-                data_max_length = tuple(data_max_length_seconds * hz for hz in (wav2vec.target_sample_hz, codec.target_sample_hz))
+                data_max_length = max(data_max_length_seconds * wav2vec.target_sample_hz, data_max_length_seconds * codec.target_sample_hz)
 
+            # TODO: print the shapes of codec.seq_len_multiple_of
             self.ds = SoundDataset(
                 folder,
                 max_length = data_max_length,
