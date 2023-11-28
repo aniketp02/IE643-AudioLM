@@ -27,6 +27,7 @@ fine_transformer_trainer = FineTransformerTrainer(
     save_results_every=100,
     save_model_every=1000,
     num_train_steps=120000,
+    force_clear_prev_results=True,
 ).cuda()
 
 restart_train = False
