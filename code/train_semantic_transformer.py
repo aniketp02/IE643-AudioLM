@@ -34,11 +34,12 @@ semantic_transformer_trainer = SemanticTransformerTrainer(
     wav2vec=wav2vec,
     folder=dataset_folder,
     results_folder=results_folder,
-    batch_size=4,
+    batch_size=64,
+    grad_accum_every = 8,
     data_max_length_seconds=7,
-    save_results_every=100,
-	save_model_every=100,
-    num_train_steps=20000
+    save_results_every=1,
+	save_model_every=10,
+    num_train_steps=100000
 ).cuda()
 
 semantic_transformer_trainer.train()

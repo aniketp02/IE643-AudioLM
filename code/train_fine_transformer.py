@@ -1,15 +1,12 @@
-from audiolm_pytorch import SoundStream, FineTransformer, FineTransformerTrainer
+from audiolm_pytorch import FineTransformer, FineTransformerTrainer, EncodecWrapper
 
-soundstream_ckpt = 'results/soundstream.8.pt'
-dataset_folder = '/home/ubuntu/IE643/project/data/wav_dir'
+dataset_folder = '/kaggle/input/librispeech-train-clean-100/LibriSpeech/train-clean-100'
 results_folder = 'results/fine'
 
-soundstream = SoundStream(
-    codebook_size=1024,
-    rq_num_quantizers=8
+encodec = EncodecWrapper(
+    target_sample_hz=24000,
+    num_quantizers=8
 )
-
-soundstream.load(f'{soundstream_ckpt}')
 
 fine_transformer = FineTransformer(
     num_coarse_quantizers=3,
@@ -21,12 +18,21 @@ fine_transformer = FineTransformer(
 
 fine_transformer_trainer = FineTransformerTrainer(
     transformer=fine_transformer,
-    codec=SoundStream,
+    codec=encodec,
     folder=dataset_folder,
     results_folder=results_folder,
-    batch_size=1,
+    grad_accum_every = 8,
+    batch_size=8,
     data_max_length_seconds=7,
-    num_train_steps=9
+    save_results_every=1000,
+    save_model_every=1000,
+    num_train_steps=120000,
 ).cuda()
+
+restart_train = False
+model_path = ''
+
+if restart_train:
+    fine_transformer_trainer.load(model_path)
 
 fine_transformer_trainer.train()

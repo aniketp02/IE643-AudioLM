@@ -2,21 +2,13 @@ from audiolm_pytorch import HubertWithKmeans, SoundStream, EncodecWrapper, Coars
 
 hubert_ckpt = 'hubert/hubert_base_ls960.pt'
 hubert_quantizer = 'hubert/hubert_base_ls960_L9_km500.bin'
-# soundstream_ckpt = 'results/soundstream.8.pt'
-dataset_folder = '/home/ubuntu/IE643/project/data/small'
+dataset_folder = '/kaggle/input/librispeech-train-clean-100/LibriSpeech/train-clean-100'
 results_folder = 'results/coarse'
 
 wav2vec = HubertWithKmeans(
     checkpoint_path=f'{hubert_ckpt}',
     kmeans_path=f'{hubert_quantizer}'
 )
-
-# soundstream = SoundStream(
-#     codebook_size=1024,
-#     rq_num_quantizers=8
-# )
-
-# soundstream.load(f'{soundstream_ckpt}')
 
 encodec = EncodecWrapper(
     target_sample_hz=24000,
@@ -37,11 +29,18 @@ coarse_transformer_trainer = CoarseTransformerTrainer(
     wav2vec=wav2vec,
     folder=dataset_folder,
     results_folder=results_folder,
-    batch_size=4,
+    grad_accum_every = 8,
+    batch_size=8,
     data_max_length_seconds=7,
     save_results_every=100,
-    save_model_every=100,
-    num_train_steps=20000,
+    save_model_every=1000,
+    num_train_steps=100000,
 ).cuda()
+
+restart_train = False
+model_path = '/kaggle/input/coarse-transformer-pt-19900/coarse.transformer.19900.pt'
+
+if restart_train:
+    coarse_transformer_trainer.load(model_path)
 
 coarse_transformer_trainer.train()
