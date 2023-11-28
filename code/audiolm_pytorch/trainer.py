@@ -1237,6 +1237,23 @@ class FineTransformerTrainer(nn.Module):
         self.batch_size = batch_size
         self.grad_accum_every = grad_accum_every
 
+        # initialize the logs
+
+        wandb.init(
+            # Set the project where this run will be logged
+            project="FineTransformerTrainer", 
+            # Track hyperparameters and run metadata
+            config={
+            "learning_rate": lr,
+            "num_train_steps": num_train_steps,
+            "batch_size": batch_size,
+            "data_max_length": data_max_length,
+            "dataset": folder,
+            "save_results_every": save_results_every,
+            "save_model_every": save_model_every,
+            "gradient_accum_every": grad_accum_every,
+            })
+
         # optimizers
 
         self.optim = get_optimizer(transformer.parameters(), lr = lr, wd = wd)
@@ -1396,6 +1413,7 @@ class FineTransformerTrainer(nn.Module):
         # log
 
         self.print(f"{steps}: loss: {logs['loss']}")
+        wandb.log({"Train Loss": logs['loss']})
         self.accelerator.log({"train_loss": logs['loss']}, step=steps)
 
         # sample results every so often
@@ -1418,6 +1436,7 @@ class FineTransformerTrainer(nn.Module):
             valid_loss /= self.average_valid_loss_over_grad_accum_every
 
             self.print(f'{steps}: valid loss {valid_loss}')
+            wandb.log({"Valid Loss": valid_loss})
             self.accelerator.log({"valid_loss": valid_loss}, step=steps)
 
         # save model every so often

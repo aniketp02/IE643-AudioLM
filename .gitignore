@@ -1,6 +1,6 @@
 data/
 code/results/
-code/wandb/
+code/wandb/*
 code/hubert/
 code/try.py
 

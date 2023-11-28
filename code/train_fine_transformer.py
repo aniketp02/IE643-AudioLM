@@ -1,6 +1,6 @@
 from audiolm_pytorch import FineTransformer, FineTransformerTrainer, EncodecWrapper
 
-dataset_folder = '/kaggle/input/librispeech-train-clean-100/LibriSpeech/train-clean-100'
+dataset_folder = '/kaggle/input/libri-speech-train-clean-100/LibriSpeech/train-clean-100'
 results_folder = 'results/fine'
 
 encodec = EncodecWrapper(
@@ -24,7 +24,7 @@ fine_transformer_trainer = FineTransformerTrainer(
     grad_accum_every = 8,
     batch_size=8,
     data_max_length_seconds=7,
-    save_results_every=1000,
+    save_results_every=100,
     save_model_every=1000,
     num_train_steps=120000,
 ).cuda()
