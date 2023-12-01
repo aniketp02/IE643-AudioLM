@@ -1547,6 +1547,7 @@ class CoarseTransformerWrapper(nn.Module):
 
         self.semantic_cross_entropy_loss_weight = semantic_cross_entropy_loss_weight
 
+        # TODO: print the shapes of the codec.rq_groups
         self.num_coarse_quantizers = transformer.num_coarse_quantizers * codec.rq_groups
         self.semantic_eos_id = transformer.semantic_eos_id
         self.coarse_eos_id = transformer.coarse_eos_id
@@ -1586,6 +1587,8 @@ class CoarseTransformerWrapper(nn.Module):
 
         assert not (exists(prime_wave) and exists(prime_coarse_token_ids)), 'you can either pass in the prime as a raw wave (codec required) or as preprocessed acoustic token ids'
 
+        # TODO: print the codec output tokens id shapes
+        # TODO: check the shape of the encoder output values
         if exists(prime_coarse_token_ids):
             coarse_token_ids = prime_coarse_token_ids
         elif exists(prime_wave):
@@ -1665,6 +1668,7 @@ class CoarseTransformerWrapper(nn.Module):
 
         assert exists(self.codec)
 
+        # TODO: check the decoded wav shape and the shape of the rearranged output.
         wav = self.codec.decode_from_codebook_indices(sampled_coarse_token_ids)
         return rearrange(wav, 'b 1 n -> b n')
 
@@ -1699,6 +1703,7 @@ class CoarseTransformerWrapper(nn.Module):
         if not exists(coarse_token_ids):
             assert exists(self.codec), 'Codec must be provided if given raw wave for training'
 
+            # TODO: check the inference return shape
             with torch.inference_mode():
                 self.codec.eval()
                 _, indices, _ = self.codec(raw_wave_for_codec, return_encoded = True)
@@ -2132,7 +2137,8 @@ class AudioLM(nn.Module):
         prime_wave_path = None,
         max_length = 2048,
         return_coarse_generated_wave = False,
-        mask_out_generated_fine_tokens = False
+        mask_out_generated_fine_tokens = False,
+        acoustic_generation = False
     ):
         assert not (self.needs_text and (not exists(text) and not exists(text_embeds))), 'text needs to be passed in if one of the transformer requires conditioning'
 
@@ -2150,8 +2156,16 @@ class AudioLM(nn.Module):
             assert exists(prime_wave_path), f'file does not exist at {str(prime_wave_path)}'
 
             prime_wave, prime_wave_input_sample_hz = torchaudio.load(str(prime_wave_path))
+            print(prime_wave.shape)
             prime_wave = prime_wave.to(self.device)
 
+        # if acoustic_generation and exists(prime_wave):
+        #     semantic_token_ids = self.semantic.wav2vec(
+        #         prime_wave,
+        #         flatten = False,
+        #         input_sample_hz = prime_wave_input_sample_hz
+        #     )
+        # else:
         semantic_token_ids = self.semantic.generate(
             text_embeds = text_embeds if self.semantic_has_condition else None,
             batch_size = batch_size,

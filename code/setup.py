@@ -44,3 +44,4 @@ setup(
     'Programming Language :: Python :: 3.6',
   ],
 )
+
