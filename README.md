@@ -1,3 +1,11 @@
+IE643 course project  
+Team: Diffuser  
+Members: Aniket Pokle (20D070011), Kushal Pawaskar (20D070059)
+
+This repository is an adaptation of <a href="https://github.com/lucidrains/audiolm-pytorch">lucidrains/audiolm-pytorch</a>
+
+Rest of the README is the same as that found in the above repository.
+
 <img src="./audiolm.png" width="600px"></img>
 
 ## AudioLM - Pytorch
